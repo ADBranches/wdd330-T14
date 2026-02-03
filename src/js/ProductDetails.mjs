@@ -63,11 +63,4 @@ function productDetailsTemplate(product) {
   document.getElementById('productDesc').innerHTML = product.DescriptionHtmlSimple;
 
   document.getElementById('addToCart').dataset.id = product.Id;
-
 }
-
-
-
-// Testing the Git tester
-
-// More testing of the Git tester
