@@ -63,7 +63,7 @@ export default class ProductDetails {
     container.innerHTML = `
       <h2>Product not found</h2>
       <p>We couldn't find the product you requested. Please return to the product list and try again.</p>
-      <p><a href="../product_listing/index.html">Back to products</a></p>
+      <p><a href="/product_listing/index.html">Back to products</a></p>
     `;
   }
 
@@ -77,9 +77,38 @@ function productDetailsTemplate(product) {
   productImage.src = product.Images.PrimaryLarge;
   productImage.alt = product.NameWithoutBrand;
 
-  document.getElementById("productPrice").textContent = product.FinalPrice;
-  document.getElementById("productColor").textContent = product.Colors[0].ColorName;
-  document.getElementById("productDesc").innerHTML = product.DescriptionHtmlSimple;
+  const priceEl = document.getElementById("productPrice");
+  const finalPrice = Number(product.FinalPrice);
+  const listPrice =
+    product.ListPrice !== undefined && product.ListPrice !== null
+      ? Number(product.ListPrice)
+      : null;
+
+  const hasDiscount =
+    listPrice &&
+    !Number.isNaN(listPrice) &&
+    !Number.isNaN(finalPrice) &&
+    listPrice > finalPrice;
+
+  if (hasDiscount) {
+    const savings = listPrice - finalPrice;
+    const savingsPercent = Math.round((savings / listPrice) * 100);
+
+    priceEl.innerHTML = `
+      <span class="price--current">$${finalPrice.toFixed(2)}</span>
+      <span class="price--old">$${listPrice.toFixed(2)}</span>
+      <span class="price--discount">You save ${savingsPercent}%</span>
+    `;
+  } else if (!Number.isNaN(finalPrice)) {
+    priceEl.textContent = `$${finalPrice.toFixed(2)}`;
+  } else {
+    priceEl.textContent = product.FinalPrice;
+  }
+
+  document.getElementById("productColor").textContent =
+    product.Colors[0].ColorName;
+  document.getElementById("productDesc").innerHTML =
+    product.DescriptionHtmlSimple;
 
   document.getElementById("addToCart").dataset.id = product.Id;
 }
